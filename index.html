@@ -1,1 +1,347 @@
-temp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Goal Tracker</title>
+<style>
+  :root{
+    --navy:#0f1e3d;
+    --cream:#ecd7b3;
+    --mint:#4bc79a;
+    --red:#cf4a3d;
+    --track-flat:#dcdfe6;
+    --bg:#f4f5f7;
+    --ink:#14213d;
+    --muted:#6b7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  header.page{ background:var(--navy); color:#fff; padding:28px 40px; }
+  header.page h1{
+    margin:0 0 4px 0; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-weight:600; font-size:28px;
+  }
+  header.page .sub{ color:#b9c2d6; font-size:13px; display:flex; gap:18px; flex-wrap:wrap; }
+  header.page .sub b{ color:#fff; font-weight:600; }
+  header.page .sub.warn{ color:#f0c98a; }
+  .wrap{ padding:32px 40px 60px; max-width:1400px; margin:0 auto; }
+  .manager-block{ margin-bottom:44px; }
+  .manager-title{
+    font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); font-weight:700; margin:0 0 14px 2px;
+    border-bottom:1px solid #e0e2e8; padding-bottom:8px;
+  }
+  .manager-title span{ color:var(--navy); }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:18px; }
+  .card{
+    background:#fff; border-radius:10px; overflow:hidden;
+    box-shadow:0 1px 3px rgba(15,30,61,0.08); border:1px solid #e6e8ee;
+  }
+  .card-head{ padding:14px 18px 10px; display:flex; justify-content:space-between; align-items:baseline; }
+  .card-head .name{
+    font-family:Georgia,'Times New Roman',serif; font-style:italic; font-weight:700;
+    font-size:19px; color:var(--navy);
+  }
+  .card-head .chan{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .group{ background:var(--cream); margin:0 12px 12px; border-radius:8px; padding:16px 14px 14px; }
+  .group-label{
+    font-family:Georgia,'Times New Roman',serif; font-style:italic; font-weight:700;
+    font-size:14px; color:var(--navy); margin-bottom:10px;
+  }
+  .rings{ display:flex; justify-content:space-between; gap:6px; }
+  .ring-item{ text-align:center; flex:1; min-width:0; }
+  .ring-item .m-label{ font-size:11px; color:#5a5f72; margin-bottom:6px; }
+  .ring-item svg{ display:block; margin:0 auto; }
+  .ring-item .pct{ position:relative; top:-58px; font-weight:700; font-size:15px; color:var(--navy); height:0; }
+  .ring-item .pct.flat{ color:#9aa1b1; font-size:10px; font-weight:600; }
+  .ring-item .goal{ font-size:11px; color:#3d445c; margin-top:2px; }
+  .ring-item .goal b{ color:var(--navy); }
+  .ring-item .flag{
+    display:inline-block; margin-left:3px; font-size:9px; color:#b4780f;
+    border:1px solid #b4780f; border-radius:50%; width:13px; height:13px; line-height:11px; cursor:default;
+  }
+  .placeholder{
+    margin:0 12px 12px; border:1.5px dashed #c7cad4; border-radius:8px;
+    padding:26px 14px; text-align:center; color:#8b90a0; font-size:12.5px; background:#fafafb;
+  }
+  .placeholder b{ display:block; color:#5a5f72; font-size:13px; margin-bottom:4px; }
+  .footnote{ max-width:1400px; margin:0 auto 40px; padding:0 40px; font-size:12px; color:var(--muted); }
+  .footnote .flag-key{ color:#b4780f; font-weight:700; }
+  .footnote .drift-key{ color:#8a4b0f; font-weight:700; }
+</style>
+</head>
+<body>
+
+<!--
+====================================================================
+BRAND GOAL TRACKER — DATA HOOKUP REFERENCE
+====================================================================
+Goal source workbook (all 12 brand tabs live here):
+  fileId: 1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3
+  ("NEW * Brand Performance Tracker - All Brands - Budget.xlsx")
+
+Row matching: column A on every tab is one row per month. Underlying
+cell value is a real date; CSV export renders it as display text
+"MMM-YY" (e.g. "Sep-26") — findGoalsRow() does a plain string match
+against that, same convention as évolis/MiGuard/Just Bjorn/Cloud Cafe.
+Read positionally (parseCsv2D), never by header name — every tab on
+this workbook has some amount of header/column drift (see per-brand
+notes below), so header text should not be trusted for lookups.
+
+Per-brand columns (0-indexed) — TOTAL / ORGANIC / ADS Sales goal:
+------------------------------------------------------------------
+Skinuva (Isabella)        gid 196666138   N=13 / S=18  / AA=26
+eraclea (Isabella)        gid unconfirmed O=14 / S=18* / X=23
+Cosmette Skincare (Isab.) gid unconfirmed O=14 / S=18* / X=23
+Cloud Cafe (Lindsay)      gid 1949875192  N=13 / S=18  / Y=24
+Just Björn (Lindsay)      gid 333511738   O=14 / S=18  / Z=25
+Amala (Lindsay)           gid unconfirmed O=14 / —(none)/ X=23
+High On Love (Lindsay)    gid unconfirmed N=13 / —(none)/ U=20
+The Crème Shop (Lindsay)  gid unconfirmed N=13 / —(none)/ W=22
+évolis Amazon+WMT (Jaclyn)gid 154860784   O=14 / T=19  / AD=29
+évolis Website (Jaclyn)   gid 1655791223  O=14 / T=19  / AD=29 (Ads
+                                                         currently blank —
+                                                         Overall/Organic
+                                                         read identical)
+MiGuard (Jaclyn)          gid 332019976   N=13 / Q=16  / X=23
+PB & Jay (Jaclyn)         gid unconfirmed O=14 / S=18  / Z=25
+skinside SEOUL (Jaclyn)   gid unconfirmed P=15 / S=18  / AB=27
+                                           (columns exist but read
+                                            $0/blank for Sep-26 —
+                                            goal not yet set)
+
+* = Organic column header still literally reads "Actual vs Goal -
+    Sales" on eraclea/Cosmette (stale label, same drift pattern PB&Jay's
+    sheet has) — the number is in the right range to be an organic
+    split but has not been confirmed with Isabella the way the other
+    brands' organic columns have. Flagged in the UI with ⚠.
+
+Amala/High On Love/Crème Shop have NO organic-goal column on their
+tabs at all — these brands were never built out with an organic/ads
+split the évolis-derived way. Only Total + Ads goals exist for them.
+
+gid "unconfirmed" = I could only see this workbook via the raw .xlsx
+bytes (Drive API), which gives tab NAMES (used above) but not the
+gid Google Sheets assigns when the file is opened in the Sheets
+editor. Grab the real gid from the browser URL next time the tab is
+open and drop it into BRAND_GOAL_CONFIG below — tab name works fine
+as an interim lookup key.
+
+------------------------------------------------------------------
+ACTUALS (the % / "Projecting $" side of each ring) — NOT YET WIRED.
+Confirmed present under the NEWDERM Amazon orders cache (brand
+values match) for: Skinuva, eraclea, Cosmette, Cloud Cafe, Just
+Bjorn, Amala, Crème Shop, évolis, MiGuard, PB & Jay, skinside SEOUL.
+High On Love did NOT turn up in that cache — confirm with Lindsay
+whether it sells under NEWDERM or a separate seller account before
+assuming it slots into the same actuals pipeline as the rest.
+
+Building this out for real means porting the same
+goalsIsValidAmazonRow (pending-inclusive, cancelled-excluded,
+returns-netted) + prorated-Ad-Sales-estimate logic the other brand
+dashboards already use — that needs server-side pagination against
+the orders cache (it's a 900KB+/120-day file; a client-side fetch of
+the whole thing per page load isn't practical), so it belongs in an
+API route in whatever repo this page ends up living in, not in this
+static file. computeActuals() below is stubbed to return null so the
+UI renders honestly ("awaiting actuals") until that's wired.
+====================================================================
+-->
+
+<header class="page">
+  <h1>Brand Goal Tracker</h1>
+  <div class="sub">
+    <span>Period: <b>September 2026 (MTD Goals)</b></span>
+    <span>Goal source: <b>NEW * Brand Performance Tracker — All Brands — Budget.xlsx</b></span>
+    <span class="warn"><b>Actuals feed not yet wired</b> — see comment block in source</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ================= ISABELLA ================= -->
+  <div class="manager-block">
+    <div class="manager-title">Brand Manager: <span>Isabella</span></div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-head"><div class="name">Skinuva</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-skinuva"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">eraclea</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-eraclea"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">Cosmette Skincare</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-cosmette"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LINDSAY ================= -->
+  <div class="manager-block">
+    <div class="manager-title">Brand Manager: <span>Lindsay</span></div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-head"><div class="name">Cloud Cafe</div><div class="chan">Amazon + Walmart</div></div>
+        <div class="group"><div class="group-label">Amazon + Walmart</div><div class="rings" id="r-cloudcafe"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">Just Björn</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-justbjorn"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">Amala</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-amala"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">High On Love</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-hol"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">The Crème Shop</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-cremeshop"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JACLYN ================= -->
+  <div class="manager-block">
+    <div class="manager-title">Brand Manager: <span>Jaclyn</span></div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-head"><div class="name">évolis</div><div class="chan">Amazon + Walmart · Website</div></div>
+        <div class="group"><div class="group-label">Amazon + Walmart</div><div class="rings" id="r-evolis-aw"></div></div>
+        <div class="group"><div class="group-label">Website</div><div class="rings" id="r-evolis-web"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">skinside SEOUL</div><div class="chan">Amazon</div></div>
+        <div class="placeholder">
+          <b>Goal not yet set for Sep-26</b>
+          Total/Organic/Ads columns exist on this tab but read $0/blank for the current period.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">MiGuard</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-miguard"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="name">PB &amp; Jay</div><div class="chan">Amazon</div></div>
+        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-pbj"></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footnote">
+  <p><b>What's real vs. placeholder in this build:</b> every dollar figure below is a live Sep-26 goal read from the workbook — nothing is invented. Rings are drawn flat (no %) because the actuals feed isn't wired into this page yet — see the comment block at the top of the source for exactly what that needs.</p>
+  <p><span class="flag-key">⚠</span> = Organic goal column is unconfirmed (stale header, not yet verified with the brand's own manager).</p>
+</div>
+
+<script>
+/* ============================================================
+   BRAND_GOAL_CONFIG
+   One entry per rendered ring-group. `gid: null` means the tab's
+   gid hasn't been confirmed yet — swap in the real one (and point
+   fetchGoalsForBrand at it) once it's grabbed from the sheet URL.
+   `snapshot` holds the verified Sep-26 numbers pulled directly
+   from the workbook, used until live fetching is wired.
+   ============================================================ */
+const FILE_ID = '1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3';
+
+const BRAND_GOAL_CONFIG = {
+  'r-skinuva':    { tab:'Skinuva',           gid:196666138, cols:{total:13, organic:18, ads:26}, organicConfirmed:true,  snapshot:{total:186800, organic:76000, ads:46700} },
+  'r-eraclea':    { tab:'eraclea',           gid:null,      cols:{total:14, organic:18, ads:23}, organicConfirmed:false, snapshot:{total:2600,   organic:700,   ads:1667} },
+  'r-cosmette':   { tab:'Cosmette Skincare', gid:null,      cols:{total:14, organic:18, ads:23}, organicConfirmed:false, snapshot:{total:4200,   organic:600,   ads:300} },
+  'r-cloudcafe':  { tab:'Clöud Café',        gid:1949875192,cols:{total:13, organic:18, ads:24}, organicConfirmed:true,  snapshot:{total:11023,  organic:6690,  ads:4333} },
+  'r-justbjorn':  { tab:'just björn',        gid:333511738, cols:{total:14, organic:18, ads:25}, organicConfirmed:true,  snapshot:{total:7948,   organic:5157,  ads:2790} },
+  'r-amala':      { tab:'amala',             gid:null,      cols:{total:14, organic:null, ads:23}, organicConfirmed:null, snapshot:{total:1998,   organic:null,  ads:467} },
+  'r-hol':        { tab:'HighOnLove',        gid:null,      cols:{total:13, organic:null, ads:20}, organicConfirmed:null, snapshot:{total:5969,   organic:null,  ads:1857} },
+  'r-cremeshop':  { tab:'The Crème Shop',    gid:null,      cols:{total:13, organic:null, ads:22}, organicConfirmed:null, snapshot:{total:19708,  organic:null,  ads:5000} },
+  'r-evolis-aw':  { tab:'evolis - Amazon',   gid:154860784, cols:{total:14, organic:19, ads:29}, organicConfirmed:true,  snapshot:{total:4267,   organic:3100,  ads:1167} },
+  'r-evolis-web': { tab:'evolis Website',    gid:1655791223,cols:{total:14, organic:19, ads:29}, organicConfirmed:true,  snapshot:{total:1075,   organic:1075,  ads:null} },
+  'r-miguard':    { tab:'MiGuard',           gid:332019976, cols:{total:13, organic:16, ads:23}, organicConfirmed:true,  snapshot:{total:3047,   organic:2157,  ads:890} },
+  'r-pbj':        { tab:'PB & Jay',          gid:null,      cols:{total:14, organic:18, ads:25}, organicConfirmed:true,  snapshot:{total:2031,   organic:475,   ads:1556} },
+};
+
+/* --- CSV fetch + positional parse, once a gid is confirmed and a
+   sheet-proxy endpoint exists in the eventual repo (matches the
+   parseCsv2D convention used on évolis/MiGuard/etc.) --- */
+async function fetchGoalsForBrand(cfg) {
+  if (!cfg.gid) return null; // gid not confirmed yet — fall back to snapshot
+  try {
+    const res = await fetch(`/api/sheet-csv?fileId=${FILE_ID}&gid=${cfg.gid}`);
+    if (!res.ok) throw new Error('fetch failed');
+    const csv = await res.text();
+    const rows = parseCsv2D(csv);
+    const now = new Date();
+    const monthStr = now.toLocaleString('en-US', { month: 'short' }) + '-' + String(now.getFullYear()).slice(2);
+    const row = findGoalsRow(rows, monthStr);
+    if (!row) return null;
+    return {
+      total: parseGoalAmt(row[cfg.cols.total]),
+      organic: cfg.cols.organic != null ? parseGoalAmt(row[cfg.cols.organic]) : null,
+      ads: cfg.cols.ads != null ? parseGoalAmt(row[cfg.cols.ads]) : null,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+function parseCsv2D(csv) {
+  return csv.split('\n').map(line => line.split(','));
+}
+function findGoalsRow(rows, monthStr) {
+  return rows.find(r => (r[0] || '').trim() === monthStr);
+}
+function parseGoalAmt(v) {
+  if (v == null) return null;
+  const n = parseFloat(String(v).replace(/[$,]/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+/* --- actuals: stubbed until the orders-cache API route exists --- */
+async function computeActuals(cfg) {
+  return null; // TODO: port goalsIsValidAmazonRow + prorated ad-sales logic
+}
+
+/* --- render --- */
+function fmt(n){ return (n===null||n===undefined) ? '—' : '$' + Math.round(n).toLocaleString(); }
+function ring(size=90, stroke=8){
+  const r=(size-stroke)/2, c=size/2;
+  return `<svg width="${size}" height="${size}"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--track-flat)" stroke-width="${stroke}"/></svg>`;
+}
+function metricBlock(label, goal, actual, flagged){
+  if (goal === null || goal === undefined) {
+    return `<div class="ring-item"><div class="m-label">${label}</div>${ring()}<div class="pct flat">no goal<br>column</div><div class="goal">—</div></div>`;
+  }
+  const pctLabel = actual ? `${Math.round(actual.pct*100)}%` : 'awaiting<br>actuals';
+  return `<div class="ring-item">
+    <div class="m-label">${label}${flagged ? '<span class="flag" title="Organic column unconfirmed">⚠</span>' : ''}</div>
+    ${ring()}
+    <div class="pct flat">${pctLabel}</div>
+    <div class="goal">Goal <b>${fmt(goal)}</b></div>
+  </div>`;
+}
+
+(async function render(){
+  for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
+    const el = document.getElementById(elId);
+    if (!el) continue;
+    const live = await fetchGoalsForBrand(cfg);
+    const g = live || cfg.snapshot;
+    const actual = await computeActuals(cfg); // null today
+    el.innerHTML =
+      metricBlock('Total Sales', g.total, actual && actual.total, false) +
+      metricBlock('Organic Sales', g.organic, actual && actual.organic, cfg.organicConfirmed === false) +
+      metricBlock('Ad Sales', g.ads, actual && actual.ads, false);
+  }
+})();
+</script>
+
+</body>
+</html>
