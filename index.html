@@ -25,8 +25,8 @@
     margin:0; font-family:Georgia,'Times New Roman',serif; font-style:italic;
     font-weight:600; font-size:18px;
   }
-  .wrap{ padding:16px 24px 32px; max-width:1600px; margin:0 auto; }
-  .manager-block{ margin-bottom:22px; }
+  .wrap{ padding:14px 24px 20px; max-width:1600px; margin:0 auto; }
+  .manager-block{ margin-bottom:16px; }
   .manager-title{
     font-size:11px; letter-spacing:.08em; text-transform:uppercase;
     color:var(--muted); font-weight:700; margin:0 0 8px 2px;
@@ -40,6 +40,9 @@
     background:#fff; border-radius:10px; overflow:hidden;
     box-shadow:0 1px 3px rgba(15,30,61,0.08); border:1px solid #e6e8ee;
   }
+  .card.wide{ grid-column: span 2; }
+  .card.wide .groups-row{ display:flex; gap:0; }
+  .card.wide .groups-row .group{ flex:1; margin:0 8px 8px; }
   .card-head{ padding:10px 12px 6px; display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; }
   .card-head .name{
     font-family:Georgia,'Times New Roman',serif; font-style:italic; font-weight:700;
@@ -57,7 +60,7 @@
   .ring-item{ text-align:center; flex:1; min-width:0; }
   .ring-item .m-label{ font-size:9px; color:#5a5f72; margin-bottom:3px; }
   .ring-item svg{ display:block; margin:0 auto; }
-  .ring-item .pct{ position:relative; top:-44px; font-weight:700; font-size:12px; color:var(--navy); height:0; }
+  .ring-item .pct{ position:relative; top:-54px; font-weight:700; font-size:14px; color:var(--navy); height:0; }
   .ring-item .pct.flat{ color:#9aa1b1; font-size:8.5px; font-weight:600; }
   .ring-item .goal{ font-size:9px; color:#3d445c; margin-top:1px; }
   .ring-item .proj{ font-size:8px; color:#6b7280; }
@@ -258,17 +261,19 @@ RING SEMANTICS
   <div class="manager-block">
     <div class="manager-title">Brand Manager: <span>Jaclyn</span></div>
     <div class="grid">
-      <div class="card">
+      <div class="card wide">
         <div class="card-head"><div class="name">évolis</div><div class="chan">Amazon + Walmart · Website</div></div>
-        <div class="group">
-          <div class="group-label">Amazon + Walmart</div>
-          <div class="group-note">Blended (Walmart: $0 MTD)</div>
-          <div class="rings" id="r-evolis-aw"></div>
-        </div>
-        <div class="group">
-          <div class="group-label">Website</div>
-          <div class="group-note">Shopify + Google Ads, separate file from Amazon/Walmart</div>
-          <div class="rings" id="r-evolis-web"></div>
+        <div class="groups-row">
+          <div class="group">
+            <div class="group-label">Amazon + Walmart</div>
+            <div class="group-note">Blended (Walmart: $0 MTD)</div>
+            <div class="rings" id="r-evolis-aw"></div>
+          </div>
+          <div class="group">
+            <div class="group-label">Website</div>
+            <div class="group-note">Shopify + Google Ads, separate file</div>
+            <div class="rings" id="r-evolis-web"></div>
+          </div>
         </div>
       </div>
       <div class="card">
@@ -332,7 +337,7 @@ const BRAND_GOAL_CONFIG = {
 function fmt(n){ return (n===null||n===undefined) ? '—' : '$' + Math.round(n).toLocaleString(); }
 function projected(actual){ return actual===null ? null : actual/TODAY_DAY*DAYS_IN_MONTH; }
 
-function ring(fillPct, colorClass, size=64, stroke=6){
+function ring(fillPct, colorClass, size=80, stroke=7){
   const r=(size-stroke)/2, c=size/2, circ=2*Math.PI*r;
   if (colorClass === 'gray') {
     return `<svg width="${size}" height="${size}"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/></svg>`;
