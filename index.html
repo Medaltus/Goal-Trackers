@@ -8,9 +8,9 @@
   :root{
     --navy:#0f1e3d;
     --cream:#ecd7b3;
-    --mint:#4bc79a;
-    --red:#cf4a3d;
-    --track-flat:#dcdfe6;
+    --green:#24E9A3;
+    --danger:#db372d;
+    --border:#dde2ec;
     --bg:#f4f5f7;
     --ink:#14213d;
     --muted:#6b7280;
@@ -20,45 +20,47 @@
     margin:0; background:var(--bg); color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   }
-  header.page{ background:var(--navy); color:#fff; padding:28px 40px; }
+  header.page{ background:var(--navy); color:#fff; padding:12px 24px; }
   header.page h1{
-    margin:0 0 4px 0; font-family:Georgia,'Times New Roman',serif; font-style:italic;
-    font-weight:600; font-size:28px;
+    margin:0; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-weight:600; font-size:18px;
   }
-  header.page .sub{ color:#b9c2d6; font-size:13px; display:flex; gap:18px; flex-wrap:wrap; }
-  header.page .sub b{ color:#fff; font-weight:600; }
-  header.page .sub.warn{ color:#f0c98a; }
-  .wrap{ padding:32px 40px 60px; max-width:1400px; margin:0 auto; }
-  .manager-block{ margin-bottom:44px; }
+  .wrap{ padding:16px 24px 32px; max-width:1600px; margin:0 auto; }
+  .manager-block{ margin-bottom:22px; }
   .manager-title{
-    font-size:13px; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--muted); font-weight:700; margin:0 0 14px 2px;
-    border-bottom:1px solid #e0e2e8; padding-bottom:8px;
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); font-weight:700; margin:0 0 8px 2px;
+    border-bottom:1px solid #e0e2e8; padding-bottom:5px;
   }
   .manager-title span{ color:var(--navy); }
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:18px; }
+  .grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; }
+  @media (max-width: 1400px){ .grid{ grid-template-columns:repeat(4, 1fr); } }
+  @media (max-width: 1100px){ .grid{ grid-template-columns:repeat(2, 1fr); } }
   .card{
     background:#fff; border-radius:10px; overflow:hidden;
     box-shadow:0 1px 3px rgba(15,30,61,0.08); border:1px solid #e6e8ee;
   }
-  .card-head{ padding:14px 18px 10px; display:flex; justify-content:space-between; align-items:baseline; }
+  .card-head{ padding:10px 12px 6px; display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; }
   .card-head .name{
     font-family:Georgia,'Times New Roman',serif; font-style:italic; font-weight:700;
-    font-size:19px; color:var(--navy);
+    font-size:15px; color:var(--navy);
   }
-  .card-head .chan{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
-  .group{ background:var(--cream); margin:0 12px 12px; border-radius:8px; padding:16px 14px 14px; }
+  .card-head .chan{ font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
+  .card-note{ margin:0 12px 6px; font-size:9.5px; color:#b4780f; }
+  .group{ background:var(--cream); margin:0 8px 8px; border-radius:7px; padding:10px 8px 10px; }
   .group-label{
     font-family:Georgia,'Times New Roman',serif; font-style:italic; font-weight:700;
-    font-size:14px; color:var(--navy); margin-bottom:10px;
+    font-size:12px; color:var(--navy); margin-bottom:1px;
   }
-  .rings{ display:flex; justify-content:space-between; gap:6px; }
+  .group-note{ font-size:8.5px; color:#8a5a12; margin-bottom:5px; }
+  .rings{ display:flex; justify-content:space-between; gap:4px; }
   .ring-item{ text-align:center; flex:1; min-width:0; }
-  .ring-item .m-label{ font-size:11px; color:#5a5f72; margin-bottom:6px; }
+  .ring-item .m-label{ font-size:9px; color:#5a5f72; margin-bottom:3px; }
   .ring-item svg{ display:block; margin:0 auto; }
-  .ring-item .pct{ position:relative; top:-58px; font-weight:700; font-size:15px; color:var(--navy); height:0; }
-  .ring-item .pct.flat{ color:#9aa1b1; font-size:10px; font-weight:600; }
-  .ring-item .goal{ font-size:11px; color:#3d445c; margin-top:2px; }
+  .ring-item .pct{ position:relative; top:-44px; font-weight:700; font-size:12px; color:var(--navy); height:0; }
+  .ring-item .pct.flat{ color:#9aa1b1; font-size:8.5px; font-weight:600; }
+  .ring-item .goal{ font-size:9px; color:#3d445c; margin-top:1px; }
+  .ring-item .proj{ font-size:8px; color:#6b7280; }
   .ring-item .goal b{ color:var(--navy); }
   .ring-item .flag{
     display:inline-block; margin-left:3px; font-size:9px; color:#b4780f;
@@ -66,12 +68,16 @@
   }
   .placeholder{
     margin:0 12px 12px; border:1.5px dashed #c7cad4; border-radius:8px;
-    padding:26px 14px; text-align:center; color:#8b90a0; font-size:12.5px; background:#fafafb;
+    padding:18px 14px; text-align:center; color:#8b90a0; font-size:12.5px; background:#fafafb;
   }
   .placeholder b{ display:block; color:#5a5f72; font-size:13px; margin-bottom:4px; }
   .footnote{ max-width:1400px; margin:0 auto 40px; padding:0 40px; font-size:12px; color:var(--muted); }
   .footnote .flag-key{ color:#b4780f; font-weight:700; }
-  .footnote .drift-key{ color:#8a4b0f; font-weight:700; }
+  .pct.green{ color:var(--green); -webkit-text-stroke: 0.3px var(--navy); }
+  .pct.red{ color:var(--danger); }
+  .pct.gray{ color:#9aa1b1; font-size:10px; font-weight:600; }
+  .proj.green{ color:#1a9c73; }
+  .proj.red{ color:var(--danger); }
 </style>
 </head>
 <body>
@@ -80,96 +86,130 @@
 ====================================================================
 BRAND GOAL TRACKER — DATA HOOKUP REFERENCE
 ====================================================================
-Goal source workbook (all 12 brand tabs live here):
-  fileId: 1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3
-  ("NEW * Brand Performance Tracker - All Brands - Budget.xlsx")
+GOALS — "NEW * Brand Performance Tracker - All Brands - Budget.xlsx"
+  fileId: 1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3  (one tab per brand)
+  Row matching: column A = "MMM-YY" text (e.g. "Sep-26"), one row per
+  month, plain string match — not a date range. Read positionally
+  (parseCsv2D), never by header name. Column positions are NOT shared
+  across brands' tabs — confirmed per-brand, not assumed:
+    MiGuard (its own dedicated tab, gid 332019976):
+      Total=N(13), Organic=Q(16), Ads=X(23)
+    skinside SEOUL (its own tab, gid 1677661344):
+      Total=P(15), Organic=S(18), Ads=AB(27) — confirmed 2026-09-14,
+      first real Sep-26 goal: $300 total / $300 organic / no ads target
+    évolis (both Amazon+Walmart and Website tabs): O(14)/T(19)/AD(29)
+    Skinuva: N(13)/S(18)/AA(26)   Cloud Cafe: N(13)/S(18)/Y(24)
+    Just Björn: O(14)/S(18)/Z(25) PB & Jay: O(14)/S(18)/Z(25)
+    eraclea/Cosmette: O(14)/S(18)*/X(23)  (*organic column unconfirmed)
+    Amala/High On Love/Crème Shop: no organic column exists at all.
 
-Row matching: column A on every tab is one row per month. Underlying
-cell value is a real date; CSV export renders it as display text
-"MMM-YY" (e.g. "Sep-26") — findGoalsRow() does a plain string match
-against that, same convention as évolis/MiGuard/Just Bjorn/Cloud Cafe.
-Read positionally (parseCsv2D), never by header name — every tab on
-this workbook has some amount of header/column drift (see per-brand
-notes below), so header text should not be trusted for lookups.
+ACTUALS — three separate sources, matching how MiGuard's own page
+  actually computes this (not my earlier guess):
 
-Per-brand columns (0-indexed) — TOTAL / ORGANIC / ADS Sales goal:
-------------------------------------------------------------------
-Skinuva (Isabella)        gid 196666138   N=13 / S=18  / AA=26
-eraclea (Isabella)        gid unconfirmed O=14 / S=18* / X=23
-Cosmette Skincare (Isab.) gid unconfirmed O=14 / S=18* / X=23
-Cloud Cafe (Lindsay)      gid 1949875192  N=13 / S=18  / Y=24
-Just Björn (Lindsay)      gid 333511738   O=14 / S=18  / Z=25
-Amala (Lindsay)           gid unconfirmed O=14 / —(none)/ X=23
-High On Love (Lindsay)    gid unconfirmed N=13 / —(none)/ U=20
-The Crème Shop (Lindsay)  gid unconfirmed N=13 / —(none)/ W=22
-évolis Amazon+WMT (Jaclyn)gid 154860784   O=14 / T=19  / AD=29
-évolis Website (Jaclyn)   gid 1655791223  O=14 / T=19  / AD=29 (Ads
-                                                         currently blank —
-                                                         Overall/Organic
-                                                         read identical)
-MiGuard (Jaclyn)          gid 332019976   N=13 / Q=16  / X=23
-PB & Jay (Jaclyn)         gid unconfirmed O=14 / S=18  / Z=25
-skinside SEOUL (Jaclyn)   gid unconfirmed P=15 / S=18  / AB=27
-                                           (columns exist but read
-                                            $0/blank for Sep-26 —
-                                            goal not yet set)
+  1) TOTAL / ORGANIC base — Amazon orders cache
+     fileId: 1SiYu8e2-Pfi14Aiuf6SAFytWVXb4_dtdNFT6wvLFPok (1 tab/brand)
+     Goals-specific validity filter (deliberately different from the
+     rest of each page's own Amazon aggregation, which excludes
+     pending): exclude 'Cancelled', exclude promotion_ids containing
+     'vine', KEEP pending. Summed for the current month, day 1 through
+     today.
+     ⚠ NOT YET DONE: netting against returns. MiGuard's real calc
+     nets returns out of both Amazon and Walmart actuals; I don't have
+     a returns-data gid yet, so every actual below is gross, not net.
+     Flag this to whoever owns the returns sheet before trusting the
+     numbers at the cent level.
 
-* = Organic column header still literally reads "Actual vs Goal -
-    Sales" on eraclea/Cosmette (stale label, same drift pattern PB&Jay's
-    sheet has) — the number is in the right range to be an organic
-    split but has not been confirmed with Isabella the way the other
-    brands' organic columns have. Flagged in the UI with ⚠.
+  2) WALMART — WALMART_ORDERS_SHEET
+     fileId: 1oIZDxN0vSf4nRvE_K95lsNyBWQd4Ef2aARm0RUtvE0Y (1 tab/brand)
+     Per your note: the underlying calc adds wmtGoalsActual into Total
+     even on brands whose card only displays "Amazon" — so Skinuva,
+     Just Björn, Crème Shop, and PB & Jay all get Walmart blended in
+     below too, not just évolis/Cloud Cafe. Same filter rule applied.
+     Contributions this month: Skinuva +$1,455, Cloud Cafe +$44, PB&Jay
+     +$33, évolis/Just Björn/Crème Shop +$0 (no September Walmart
+     orders).
 
-Amala/High On Love/Crème Shop have NO organic-goal column on their
-tabs at all — these brands were never built out with an organic/ads
-split the évolis-derived way. Only Total + Ads goals exist for them.
+  3) AD SALES — SHEET_AD_ORDERS (ASIN-level Ad Orders Cache)
+     fileId: 1N30haUFZkdv9rrvYuWwUhxEm0z7MGp1bz9F462aF-QI (1 tab/brand)
+     Pre-aggregated by (year, month, asin) — sum every Sep-26 row's
+     `sales` per brand. This is the SAME approximation MiGuard's own
+     Goal Tracker ring uses — reusing whatever ad-sales figure is
+     already in scope at that point in the function, not the more
+     accurate blended-spend logic the page computes later for its top
+     KPI card. Earlier I flagged an "8.8x gap" against MiGuard's own
+     $1,055 MTD Ad Sales KPI — that comparison was against the WRONG
+     number. The Goal Tracker ring and the KPI card are two different,
+     intentionally different calculations in the same codebase. This
+     sheet is the right source for the ring; it just isn't the same
+     as the page's headline ad-sales figure, and was never meant to be.
+     Organic actual = Total actual − Ad actual, floored at 0.
 
-gid "unconfirmed" = I could only see this workbook via the raw .xlsx
-bytes (Drive API), which gives tab NAMES (used above) but not the
-gid Google Sheets assigns when the file is opened in the Sheets
-editor. Grab the real gid from the browser URL next time the tab is
-open and drop it into BRAND_GOAL_CONFIG below — tab name works fine
-as an interim lookup key.
+  4) évolis WEBSITE — separate Shopify + Google Ads file
+     fileId: 1Wyc43am0EIk2OArL2EU8fP-EyHkhz-9-S5tcY3E60zw
+     Orders gid 597852778, Ads gid 219707263.
+     Orders: no 'cancelled'/'vine' fields (Shopify, not Amazon) — used
+     financial_status instead: excluded 'REFUNDED', kept 'PAID' and
+     'PARTIALLY_REFUNDED' (an approximation of returns-netting, not
+     the real thing — a partial refund's dollar amount isn't
+     subtracted, the order just isn't excluded outright). Fulfillment
+     status (UNFULFILLED/FULFILLED) not used as a filter, same reason
+     Amazon's 'Pending' isn't excluded.
+     Ads: 'revenue' is a SITE-WIDE daily total, repeated identically
+     on every campaign row for that date (verified: all rows
+     sharing a date have the same revenue value) — summing it row-by-
+     row would multiply-count by however many campaigns ran that day.
+     Took one value per date, summed across Sep-26 dates instead.
+     'spend' IS genuinely per-campaign and safe to sum normally.
 
-------------------------------------------------------------------
-ACTUALS (the % / "Projecting $" side of each ring) — NOT YET WIRED.
-Confirmed present under the NEWDERM Amazon orders cache (brand
-values match) for: Skinuva, eraclea, Cosmette, Cloud Cafe, Just
-Bjorn, Amala, Crème Shop, évolis, MiGuard, PB & Jay, skinside SEOUL.
-High On Love did NOT turn up in that cache — confirm with Lindsay
-whether it sells under NEWDERM or a separate seller account before
-assuming it slots into the same actuals pipeline as the rest.
+  Known gap still open: High On Love — no gid on any of the three
+  sheets (orders, Walmart, or ads).
 
-Building this out for real means porting the same
-goalsIsValidAmazonRow (pending-inclusive, cancelled-excluded,
-returns-netted) + prorated-Ad-Sales-estimate logic the other brand
-dashboards already use — that needs server-side pagination against
-the orders cache (it's a 900KB+/120-day file; a client-side fetch of
-the whole thing per page load isn't practical), so it belongs in an
-API route in whatever repo this page ends up living in, not in this
-static file. computeActuals() below is stubbed to return null so the
-UI renders honestly ("awaiting actuals") until that's wired.
+PROJECTION — only meaningful for an MTD view (no "Last Full Month"
+  toggle exists on this page yet — say the word if you want one; the
+  code below is written so it's a straight swap: skip the projection
+  step and use the literal month-end actual instead):
+    projected = (actual ÷ day-of-month-so-far) × days-in-month
+  Straight daily-average run-rate. Not weighted, no seasonality, no
+  accounting for pending settling later.
+
+RING SEMANTICS
+  - Fill (how full the ring is) = actual ÷ goal. Real progress so far
+    — never the projection. (There's a reason this matters: an
+    early-month ring showing 100% full because the *projection* says
+    you'll hit goal reads as "already done" when you're not.)
+  - Color = binary, driven by PROJECTED vs goal, not by fill %:
+      green (--green #24E9A3) = projected ≥ goal
+      red   (--danger #db372d) = projected < goal
+    No amber/middle state, anywhere, for any metric — Total, Organic,
+    and Ad Sales all use the identical rule, including Ad Sales even
+    though its source is a looser approximation (see above).
+  - Gray (--border) is two DIFFERENT messages, not one:
+      "No goal set"     → the goal column itself has no value
+      "Not available yet" → goal exists but actuals couldn't be
+                             computed (e.g. an empty/broken orders fetch)
+  - The same color drives the ring stroke, the center % text, and the
+    "Projecting $X" label underneath — all three always match.
+  - Pure hand-built SVG (no Chart.js) — re-renders as a fresh string
+    on every update, nothing to destroy/dispose first.
 ====================================================================
 -->
 
 <header class="page">
   <h1>Brand Goal Tracker</h1>
-  <div class="sub">
-    <span>Period: <b>September 2026 (MTD Goals)</b></span>
-    <span>Goal source: <b>NEW * Brand Performance Tracker — All Brands — Budget.xlsx</b></span>
-    <span class="warn"><b>Actuals feed not yet wired</b> — see comment block in source</span>
-  </div>
 </header>
 
 <div class="wrap">
 
-  <!-- ================= ISABELLA ================= -->
   <div class="manager-block">
     <div class="manager-title">Brand Manager: <span>Isabella</span></div>
     <div class="grid">
       <div class="card">
         <div class="card-head"><div class="name">Skinuva</div><div class="chan">Amazon</div></div>
-        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-skinuva"></div></div>
+        <div class="group">
+          <div class="group-label">Amazon</div>
+          <div class="group-note">Includes Walmart (+$1,455 MTD), not shown as a separate group</div>
+          <div class="rings" id="r-skinuva"></div>
+        </div>
       </div>
       <div class="card">
         <div class="card-head"><div class="name">eraclea</div><div class="chan">Amazon</div></div>
@@ -182,13 +222,16 @@ UI renders honestly ("awaiting actuals") until that's wired.
     </div>
   </div>
 
-  <!-- ================= LINDSAY ================= -->
   <div class="manager-block">
     <div class="manager-title">Brand Manager: <span>Lindsay</span></div>
     <div class="grid">
       <div class="card">
         <div class="card-head"><div class="name">Cloud Cafe</div><div class="chan">Amazon + Walmart</div></div>
-        <div class="group"><div class="group-label">Amazon + Walmart</div><div class="rings" id="r-cloudcafe"></div></div>
+        <div class="group">
+          <div class="group-label">Amazon + Walmart</div>
+          <div class="group-note">Blended (Walmart: $44 MTD)</div>
+          <div class="rings" id="r-cloudcafe"></div>
+        </div>
       </div>
       <div class="card">
         <div class="card-head"><div class="name">Just Björn</div><div class="chan">Amazon</div></div>
@@ -200,7 +243,10 @@ UI renders honestly ("awaiting actuals") until that's wired.
       </div>
       <div class="card">
         <div class="card-head"><div class="name">High On Love</div><div class="chan">Amazon</div></div>
-        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-hol"></div></div>
+        <div class="placeholder">
+          <b>No actuals source found</b>
+          Not present in the Newderm orders cache (no gid on the SHEET_ORDERS tab) — confirm seller account with Lindsay.
+        </div>
       </div>
       <div class="card">
         <div class="card-head"><div class="name">The Crème Shop</div><div class="chan">Amazon</div></div>
@@ -209,20 +255,27 @@ UI renders honestly ("awaiting actuals") until that's wired.
     </div>
   </div>
 
-  <!-- ================= JACLYN ================= -->
   <div class="manager-block">
     <div class="manager-title">Brand Manager: <span>Jaclyn</span></div>
     <div class="grid">
       <div class="card">
         <div class="card-head"><div class="name">évolis</div><div class="chan">Amazon + Walmart · Website</div></div>
-        <div class="group"><div class="group-label">Amazon + Walmart</div><div class="rings" id="r-evolis-aw"></div></div>
-        <div class="group"><div class="group-label">Website</div><div class="rings" id="r-evolis-web"></div></div>
+        <div class="group">
+          <div class="group-label">Amazon + Walmart</div>
+          <div class="group-note">Blended (Walmart: $0 MTD)</div>
+          <div class="rings" id="r-evolis-aw"></div>
+        </div>
+        <div class="group">
+          <div class="group-label">Website</div>
+          <div class="group-note">Shopify + Google Ads, separate file from Amazon/Walmart</div>
+          <div class="rings" id="r-evolis-web"></div>
+        </div>
       </div>
       <div class="card">
         <div class="card-head"><div class="name">skinside SEOUL</div><div class="chan">Amazon</div></div>
-        <div class="placeholder">
-          <b>Goal not yet set for Sep-26</b>
-          Total/Organic/Ads columns exist on this tab but read $0/blank for the current period.
+        <div class="group">
+          <div class="group-label">Amazon</div>
+          <div class="rings" id="r-skinside"></div>
         </div>
       </div>
       <div class="card">
@@ -231,6 +284,7 @@ UI renders honestly ("awaiting actuals") until that's wired.
       </div>
       <div class="card">
         <div class="card-head"><div class="name">PB &amp; Jay</div><div class="chan">Amazon</div></div>
+        <div class="card-note">Amazon + Walmart blended (Walmart: $33 MTD)</div>
         <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-pbj"></div></div>
       </div>
     </div>
@@ -239,108 +293,99 @@ UI renders honestly ("awaiting actuals") until that's wired.
 </div>
 
 <div class="footnote">
-  <p><b>What's real vs. placeholder in this build:</b> every dollar figure below is a live Sep-26 goal read from the workbook — nothing is invented. Rings are drawn flat (no %) because the actuals feed isn't wired into this page yet — see the comment block at the top of the source for exactly what that needs.</p>
-  <p><span class="flag-key">⚠</span> = Organic goal column is unconfirmed (stale header, not yet verified with the brand's own manager).</p>
+  <p>Ring fill = actual ÷ goal. Ring color = projected ÷ goal (green ≥ 100%, red &lt; 100%) — binary, same rule for every metric including Ad Sales. Gray means either "No goal set" (goal column empty) or "Not available yet" (goal exists, actuals don't). <span class="flag-key">⚠</span> next to a goal figure = the Organic goal column itself is unconfirmed on that brand's sheet (stale header) — unrelated to the actuals gaps.</p>
 </div>
 
 <script>
+const GOAL_FILE_ID = '1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3';
+const ORDERS_FILE_ID = '1SiYu8e2-Pfi14Aiuf6SAFytWVXb4_dtdNFT6wvLFPok';
+const WALMART_FILE_ID = '1oIZDxN0vSf4nRvE_K95lsNyBWQd4Ef2aARm0RUtvE0Y';
+const ADS_FILE_ID = '1N30haUFZkdv9rrvYuWwUhxEm0z7MGp1bz9F462aF-QI';
+
 /* ============================================================
    BRAND_GOAL_CONFIG
-   One entry per rendered ring-group. `gid: null` means the tab's
-   gid hasn't been confirmed yet — swap in the real one (and point
-   fetchGoalsForBrand at it) once it's grabbed from the sheet URL.
-   `snapshot` holds the verified Sep-26 numbers pulled directly
-   from the workbook, used until live fetching is wired.
+   goal:{total,organic,ads} — from the goals workbook, verified Sep-26.
+   actual:{total,organic,ads} — already blended (Amazon+Walmart for
+   total/organic; Ad Orders Cache for ads), Sep-26 MTD snapshot.
+   null on any of total/organic/ads means "not available yet", NOT
+   zero — rendered as the gray "Not available yet" state, distinct
+   from a genuinely-null goal ("No goal set").
    ============================================================ */
-const FILE_ID = '1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3';
+const TODAY_DAY = 14;
+const DAYS_IN_MONTH = 30;
 
 const BRAND_GOAL_CONFIG = {
-  'r-skinuva':    { tab:'Skinuva',           gid:196666138, cols:{total:13, organic:18, ads:26}, organicConfirmed:true,  snapshot:{total:186800, organic:76000, ads:46700} },
-  'r-eraclea':    { tab:'eraclea',           gid:null,      cols:{total:14, organic:18, ads:23}, organicConfirmed:false, snapshot:{total:2600,   organic:700,   ads:1667} },
-  'r-cosmette':   { tab:'Cosmette Skincare', gid:null,      cols:{total:14, organic:18, ads:23}, organicConfirmed:false, snapshot:{total:4200,   organic:600,   ads:300} },
-  'r-cloudcafe':  { tab:'Clöud Café',        gid:1949875192,cols:{total:13, organic:18, ads:24}, organicConfirmed:true,  snapshot:{total:11023,  organic:6690,  ads:4333} },
-  'r-justbjorn':  { tab:'just björn',        gid:333511738, cols:{total:14, organic:18, ads:25}, organicConfirmed:true,  snapshot:{total:7948,   organic:5157,  ads:2790} },
-  'r-amala':      { tab:'amala',             gid:null,      cols:{total:14, organic:null, ads:23}, organicConfirmed:null, snapshot:{total:1998,   organic:null,  ads:467} },
-  'r-hol':        { tab:'HighOnLove',        gid:null,      cols:{total:13, organic:null, ads:20}, organicConfirmed:null, snapshot:{total:5969,   organic:null,  ads:1857} },
-  'r-cremeshop':  { tab:'The Crème Shop',    gid:null,      cols:{total:13, organic:null, ads:22}, organicConfirmed:null, snapshot:{total:19708,  organic:null,  ads:5000} },
-  'r-evolis-aw':  { tab:'evolis - Amazon',   gid:154860784, cols:{total:14, organic:19, ads:29}, organicConfirmed:true,  snapshot:{total:4267,   organic:3100,  ads:1167} },
-  'r-evolis-web': { tab:'evolis Website',    gid:1655791223,cols:{total:14, organic:19, ads:29}, organicConfirmed:true,  snapshot:{total:1075,   organic:1075,  ads:null} },
-  'r-miguard':    { tab:'MiGuard',           gid:332019976, cols:{total:13, organic:16, ads:23}, organicConfirmed:true,  snapshot:{total:3047,   organic:2157,  ads:890} },
-  'r-pbj':        { tab:'PB & Jay',          gid:null,      cols:{total:14, organic:18, ads:25}, organicConfirmed:true,  snapshot:{total:2031,   organic:475,   ads:1556} },
+  'r-skinuva':    { goal:{total:186800, organic:76000, ads:46700}, organicConfirmed:true,  actual:{total:52236, organic:38617, ads:13619} },
+  'r-eraclea':    { goal:{total:2600,   organic:700,   ads:1667},  organicConfirmed:false, actual:{total:742,   organic:434,   ads:308} },
+  'r-cosmette':   { goal:{total:4200,   organic:600,   ads:300},   organicConfirmed:false, actual:{total:563,   organic:377,   ads:186} },
+  'r-cloudcafe':  { goal:{total:11023,  organic:6690,  ads:4333},  organicConfirmed:true,  actual:{total:1742,  organic:1506,  ads:236} },
+  'r-justbjorn':  { goal:{total:7948,   organic:5157,  ads:2790},  organicConfirmed:true,  actual:{total:2614,  organic:2307,  ads:307} },
+  'r-amala':      { goal:{total:1998,   organic:null,  ads:467},   organicConfirmed:null,  actual:{total:114,   organic:null,  ads:0} },
+  'r-cremeshop':  { goal:{total:19708,  organic:null,  ads:5000},  organicConfirmed:null,  actual:{total:6426,  organic:null,  ads:883} },
+  'r-evolis-aw':  { goal:{total:4267,   organic:3100,  ads:1167},  organicConfirmed:true,  actual:{total:2260,  organic:1694,  ads:566} },
+  'r-evolis-web': { goal:{total:1075,   organic:1075,  ads:null},  organicConfirmed:true,  actual:{total:1866,  organic:805,   ads:1061} },
+  'r-miguard':    { goal:{total:3047,   organic:2157,  ads:890},   organicConfirmed:true,  actual:{total:1159,  organic:1039,  ads:120} },
+  'r-pbj':        { goal:{total:2031,   organic:475,   ads:1556},  organicConfirmed:true,  actual:{total:285,   organic:62,    ads:223} },
+  'r-skinside':   { goal:{total:300,    organic:300,   ads:null},  organicConfirmed:true,  actual:{total:192,   organic:36,    ads:156} },
 };
 
-/* --- CSV fetch + positional parse, once a gid is confirmed and a
-   sheet-proxy endpoint exists in the eventual repo (matches the
-   parseCsv2D convention used on évolis/MiGuard/etc.) --- */
-async function fetchGoalsForBrand(cfg) {
-  if (!cfg.gid) return null; // gid not confirmed yet — fall back to snapshot
-  try {
-    const res = await fetch(`/api/sheet-csv?fileId=${FILE_ID}&gid=${cfg.gid}`);
-    if (!res.ok) throw new Error('fetch failed');
-    const csv = await res.text();
-    const rows = parseCsv2D(csv);
-    const now = new Date();
-    const monthStr = now.toLocaleString('en-US', { month: 'short' }) + '-' + String(now.getFullYear()).slice(2);
-    const row = findGoalsRow(rows, monthStr);
-    if (!row) return null;
-    return {
-      total: parseGoalAmt(row[cfg.cols.total]),
-      organic: cfg.cols.organic != null ? parseGoalAmt(row[cfg.cols.organic]) : null,
-      ads: cfg.cols.ads != null ? parseGoalAmt(row[cfg.cols.ads]) : null,
-    };
-  } catch (e) {
-    return null;
-  }
-}
-function parseCsv2D(csv) {
-  return csv.split('\n').map(line => line.split(','));
-}
-function findGoalsRow(rows, monthStr) {
-  return rows.find(r => (r[0] || '').trim() === monthStr);
-}
-function parseGoalAmt(v) {
-  if (v == null) return null;
-  const n = parseFloat(String(v).replace(/[$,]/g, ''));
-  return isNaN(n) ? null : n;
-}
-
-/* --- actuals: stubbed until the orders-cache API route exists --- */
-async function computeActuals(cfg) {
-  return null; // TODO: port goalsIsValidAmazonRow + prorated ad-sales logic
-}
-
-/* --- render --- */
 function fmt(n){ return (n===null||n===undefined) ? '—' : '$' + Math.round(n).toLocaleString(); }
-function ring(size=90, stroke=8){
-  const r=(size-stroke)/2, c=size/2;
-  return `<svg width="${size}" height="${size}"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--track-flat)" stroke-width="${stroke}"/></svg>`;
-}
-function metricBlock(label, goal, actual, flagged){
-  if (goal === null || goal === undefined) {
-    return `<div class="ring-item"><div class="m-label">${label}</div>${ring()}<div class="pct flat">no goal<br>column</div><div class="goal">—</div></div>`;
+function projected(actual){ return actual===null ? null : actual/TODAY_DAY*DAYS_IN_MONTH; }
+
+function ring(fillPct, colorClass, size=64, stroke=6){
+  const r=(size-stroke)/2, c=size/2, circ=2*Math.PI*r;
+  if (colorClass === 'gray') {
+    return `<svg width="${size}" height="${size}"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/></svg>`;
   }
-  const pctLabel = actual ? `${Math.round(actual.pct*100)}%` : 'awaiting<br>actuals';
+  const clamped = Math.max(0, Math.min(1, fillPct));
+  const color = colorClass === 'green' ? 'var(--green)' : 'var(--danger)';
+  const dash = clamped*circ;
+  return `<svg width="${size}" height="${size}">
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/>
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+      transform="rotate(-90 ${c} ${c})"/>
+  </svg>`;
+}
+
+function metricBlock(label, goal, actual, flagged){
+  const flagHtml = flagged ? '<span class="flag" title="Organic column unconfirmed">⚠</span>' : '';
+  if (goal === null || goal === undefined) {
+    return `<div class="ring-item">
+      <div class="m-label">${label}${flagHtml}</div>
+      ${ring(0,'gray')}
+      <div class="pct gray">No goal<br>set</div>
+      <div class="goal">${actual!=null ? 'MTD ' + fmt(actual) : '—'}</div>
+    </div>`;
+  }
+  if (actual === null || actual === undefined) {
+    return `<div class="ring-item">
+      <div class="m-label">${label}${flagHtml}</div>
+      ${ring(0,'gray')}
+      <div class="pct gray">Not available<br>yet</div>
+      <div class="goal">Goal <b>${fmt(goal)}</b></div>
+    </div>`;
+  }
+  const fillPct = actual / goal;
+  const proj = projected(actual);
+  const colorClass = proj >= goal ? 'green' : 'red';
   return `<div class="ring-item">
-    <div class="m-label">${label}${flagged ? '<span class="flag" title="Organic column unconfirmed">⚠</span>' : ''}</div>
-    ${ring()}
-    <div class="pct flat">${pctLabel}</div>
+    <div class="m-label">${label}${flagHtml}</div>
+    ${ring(fillPct, colorClass)}
+    <div class="pct ${colorClass}">${Math.round(fillPct*100)}%</div>
+    <div class="proj ${colorClass}">Projecting ${fmt(proj)}</div>
     <div class="goal">Goal <b>${fmt(goal)}</b></div>
   </div>`;
 }
 
-(async function render(){
-  for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
-    const el = document.getElementById(elId);
-    if (!el) continue;
-    const live = await fetchGoalsForBrand(cfg);
-    const g = live || cfg.snapshot;
-    const actual = await computeActuals(cfg); // null today
-    el.innerHTML =
-      metricBlock('Total Sales', g.total, actual && actual.total, false) +
-      metricBlock('Organic Sales', g.organic, actual && actual.organic, cfg.organicConfirmed === false) +
-      metricBlock('Ad Sales', g.ads, actual && actual.ads, false);
-  }
-})();
+for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
+  const el = document.getElementById(elId);
+  if (!el) continue;
+  el.innerHTML =
+    metricBlock('Total Sales', cfg.goal.total, cfg.actual.total, false) +
+    metricBlock('Organic Sales', cfg.goal.organic, cfg.actual.organic, cfg.organicConfirmed === false) +
+    metricBlock('Ad Sales', cfg.goal.ads, cfg.actual.ads, false);
+}
 </script>
 
 </body>
