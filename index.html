@@ -329,7 +329,7 @@ const DAYS_IN_MONTH = 30;
 const BRAND_GOAL_CONFIG = {
   'r-skinuva':    { goalGid:196666138,  goalCols:{total:13, organic:18, ads:26}, goal:{total:186800, organic:76000, ads:46700}, organicConfirmed:true,  actual:{total:52236, organic:38617, ads:13619} },
   'r-eraclea':    { goalGid:942935799,  goalCols:{total:14, organic:18, ads:23}, goal:{total:2600,   organic:700,   ads:1667},  organicConfirmed:false, actual:{total:742,   organic:434,   ads:308} },
-  'r-cosmette':   { goalGid:1084102342, goalCols:{total:14, organic:18, ads:23}, goal:{total:4200,   organic:600,   ads:300},   organicConfirmed:false, actual:{total:563,   organic:377,   ads:186} },
+  'r-cosmette':   { goalGid:1084102342, goalCols:{total:14, organic:18, ads:23}, goal:{total:2200,   organic:1900,  ads:300},   organicConfirmed:false, actual:{total:563,   organic:377,   ads:186} },
   'r-cloudcafe':  { goalGid:1949875192, goalCols:{total:13, organic:18, ads:24}, goal:{total:11023,  organic:6690,  ads:4333},  organicConfirmed:true,  actual:{total:1742,  organic:1506,  ads:236} },
   'r-justbjorn':  { goalGid:333511738,  goalCols:{total:14, organic:18, ads:25}, goal:{total:7948,   organic:5157,  ads:2790},  organicConfirmed:true,  actual:{total:2614,  organic:2307,  ads:307} },
   'r-amala':      { goalGid:2031782096, goalCols:{total:14, organic:null, ads:23}, goal:{total:1998,   organic:null,  ads:467},   organicConfirmed:null,  actual:{total:114,   organic:null,  ads:0} },
@@ -343,7 +343,31 @@ const BRAND_GOAL_CONFIG = {
 
 /* Naive comma-split CSV parser — fine for these columns (plain
    numbers/dates, nothing quoted), not a general-purpose CSV parser. */
-function parseCsvRows(csv){ return csv.split('\n').map(l => l.split(',')); }
+function parseCsvRows(csv){
+  // Proper quote-aware CSV parser — cells like " $ 186,800.00 " contain
+  // a comma inside quotes; naive split(',') breaks on that and shifts
+  // every later column in the row. This handles quoted fields and
+  // doubled-quote escaping ("" -> ") the standard way.
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < csv.length; i++) {
+    const c = csv[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (csv[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\r') { /* skip */ }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += c;
+    }
+  }
+  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+  return rows;
+}
 function parseGoalAmt(v){
   if (v == null) return null;
   const n = parseFloat(String(v).replace(/[$,]/g, '').trim());
