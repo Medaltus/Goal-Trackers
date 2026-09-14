@@ -325,7 +325,6 @@ const DAYS_IN_MONTH = 30;
    confirmed working: the export endpoint sends
    access-control-allow-origin: * so a real browser fetch() succeeds
    cross-origin, not just server-side curl. */
-const GOAL_FILE_ID = '1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3';
 
 const BRAND_GOAL_CONFIG = {
   'r-skinuva':    { goalGid:196666138,  goalCols:{total:13, organic:18, ads:26}, goal:{total:186800, organic:76000, ads:46700}, organicConfirmed:true,  actual:{total:52236, organic:38617, ads:13619} },
@@ -422,18 +421,38 @@ function metricBlock(label, goal, actual, flagged){
   </div>`;
 }
 
-(async function render(){
-  for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
-    const el = document.getElementById(elId);
-    if (!el) continue;
-    const liveGoal = await fetchLiveGoal(cfg);
-    const goal = liveGoal || cfg.goal; // falls back to the Sep-26 snapshot if the fetch fails
-    el.innerHTML =
-      metricBlock('Total Sales', goal.total, cfg.actual.total, false) +
-      metricBlock('Organic Sales', goal.organic, cfg.actual.organic, cfg.organicConfirmed === false) +
-      metricBlock('Ad Sales', goal.ads, cfg.actual.ads, false);
-  }
-})();
+function renderCard(elId, cfg, goal){
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML =
+    metricBlock('Total Sales', goal.total, cfg.actual.total, false) +
+    metricBlock('Organic Sales', goal.organic, cfg.actual.organic, cfg.organicConfirmed === false) +
+    metricBlock('Ad Sales', goal.ads, cfg.actual.ads, false);
+}
+
+// PHASE 1 — synchronous, no network dependency, always runs immediately.
+// The page must be fully correct on load using only the Sep-26 snapshot,
+// regardless of whether live fetching works in this environment at all.
+for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
+  renderCard(elId, cfg, cfg.goal);
+}
+
+// PHASE 2 — best-effort live enhancement, fully decoupled per brand so
+// one slow/blocked fetch can never hold up (or blank) anything else.
+// Each fetch is capped at 4s; if it doesn't resolve in time, that one
+// card just quietly keeps its snapshot values.
+function withTimeout(promise, ms){
+  return Promise.race([
+    promise,
+    new Promise(resolve => setTimeout(() => resolve(null), ms))
+  ]);
+}
+for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
+  if (!cfg.goalGid) continue;
+  withTimeout(fetchLiveGoal(cfg), 4000).then(liveGoal => {
+    if (liveGoal) renderCard(elId, cfg, liveGoal);
+  });
+}
 </script>
 
 </body>
