@@ -66,8 +66,8 @@
   .ring-item .proj{ font-size:8px; color:#6b7280; }
   .ring-item .goal b{ color:var(--navy); }
   .ring-item .flag{
-    display:inline-block; margin-left:3px; font-size:9px; color:#b4780f;
-    border:1px solid #b4780f; border-radius:50%; width:13px; height:13px; line-height:11px; cursor:default;
+    display:inline-block; margin-left:3px; font-size:9px; color:var(--muted);
+    border:1px solid #c2c6d1; border-radius:50%; width:13px; height:13px; line-height:11px; cursor:default;
   }
   .placeholder{
     margin:0 12px 12px; border:1.5px dashed #c7cad4; border-radius:8px;
@@ -75,8 +75,8 @@
   }
   .placeholder b{ display:block; color:#5a5f72; font-size:13px; margin-bottom:4px; }
   .footnote{ max-width:1400px; margin:0 auto 40px; padding:0 40px; font-size:12px; color:var(--muted); }
-  .footnote .flag-key{ color:#b4780f; font-weight:700; }
-  .pct.green{ color:var(--green); -webkit-text-stroke: 0.3px var(--navy); }
+  .footnote .flag-key{ color:var(--muted); font-weight:700; }
+  .pct.green{ color:#0d9b6c; }
   .pct.red{ color:var(--danger); }
   .pct.gray{ color:#9aa1b1; font-size:10px; font-weight:600; }
   .proj.green{ color:#1a9c73; }
@@ -91,6 +91,11 @@ BRAND GOAL TRACKER — DATA HOOKUP REFERENCE
 ====================================================================
 GOALS — "NEW * Brand Performance Tracker - All Brands - Budget.xlsx"
   fileId: 1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3  (one tab per brand)
+  NOW LIVE (as of this edit): every brand fetches its own goal row
+  straight from its tab on page load (fetchLiveGoal, below). The
+  hardcoded goal{} values in BRAND_GOAL_CONFIG are only a fallback
+  for if that fetch fails — edit a goal cell in the sheet and it
+  shows up here on next page load, no code change needed.
   Row matching: column A = "MMM-YY" text (e.g. "Sep-26"), one row per
   month, plain string match — not a date range. Read positionally
   (parseCsv2D), never by header name. Column positions are NOT shared
@@ -207,10 +212,9 @@ RING SEMANTICS
     <div class="manager-title">Brand Manager: <span>Isabella</span></div>
     <div class="grid">
       <div class="card">
-        <div class="card-head"><div class="name">Skinuva</div><div class="chan">Amazon</div></div>
+        <div class="card-head"><div class="name">Skinuva</div><div class="chan">Amazon + Walmart</div></div>
         <div class="group">
-          <div class="group-label">Amazon</div>
-          <div class="group-note">Includes Walmart (+$1,455 MTD), not shown as a separate group</div>
+          <div class="group-label">Amazon + Walmart</div>
           <div class="rings" id="r-skinuva"></div>
         </div>
       </div>
@@ -232,13 +236,12 @@ RING SEMANTICS
         <div class="card-head"><div class="name">Cloud Cafe</div><div class="chan">Amazon + Walmart</div></div>
         <div class="group">
           <div class="group-label">Amazon + Walmart</div>
-          <div class="group-note">Blended (Walmart: $44 MTD)</div>
           <div class="rings" id="r-cloudcafe"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="name">Just Björn</div><div class="chan">Amazon</div></div>
-        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-justbjorn"></div></div>
+        <div class="card-head"><div class="name">Just Björn</div><div class="chan">Amazon + Walmart</div></div>
+        <div class="group"><div class="group-label">Amazon + Walmart</div><div class="rings" id="r-justbjorn"></div></div>
       </div>
       <div class="card">
         <div class="card-head"><div class="name">Amala</div><div class="chan">Amazon</div></div>
@@ -266,12 +269,10 @@ RING SEMANTICS
         <div class="groups-row">
           <div class="group">
             <div class="group-label">Amazon + Walmart</div>
-            <div class="group-note">Blended (Walmart: $0 MTD)</div>
             <div class="rings" id="r-evolis-aw"></div>
           </div>
           <div class="group">
             <div class="group-label">Website</div>
-            <div class="group-note">Shopify + Google Ads, separate file</div>
             <div class="rings" id="r-evolis-web"></div>
           </div>
         </div>
@@ -288,9 +289,8 @@ RING SEMANTICS
         <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-miguard"></div></div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="name">PB &amp; Jay</div><div class="chan">Amazon</div></div>
-        <div class="card-note">Amazon + Walmart blended (Walmart: $33 MTD)</div>
-        <div class="group"><div class="group-label">Amazon</div><div class="rings" id="r-pbj"></div></div>
+        <div class="card-head"><div class="name">PB &amp; Jay</div><div class="chan">Amazon + Walmart</div></div>
+        <div class="group"><div class="group-label">Amazon + Walmart</div><div class="rings" id="r-pbj"></div></div>
       </div>
     </div>
   </div>
@@ -319,20 +319,59 @@ const ADS_FILE_ID = '1N30haUFZkdv9rrvYuWwUhxEm0z7MGp1bz9F462aF-QI';
 const TODAY_DAY = 14;
 const DAYS_IN_MONTH = 30;
 
+/* goal:{...} below is the last-known snapshot (Sep-26), used only if
+   the live fetch fails. goalGid/goalCols let every brand pull its
+   CURRENT goal figures straight from the workbook on page load —
+   confirmed working: the export endpoint sends
+   access-control-allow-origin: * so a real browser fetch() succeeds
+   cross-origin, not just server-side curl. */
+const GOAL_FILE_ID = '1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3';
+
 const BRAND_GOAL_CONFIG = {
-  'r-skinuva':    { goal:{total:186800, organic:76000, ads:46700}, organicConfirmed:true,  actual:{total:52236, organic:38617, ads:13619} },
-  'r-eraclea':    { goal:{total:2600,   organic:700,   ads:1667},  organicConfirmed:false, actual:{total:742,   organic:434,   ads:308} },
-  'r-cosmette':   { goal:{total:4200,   organic:600,   ads:300},   organicConfirmed:false, actual:{total:563,   organic:377,   ads:186} },
-  'r-cloudcafe':  { goal:{total:11023,  organic:6690,  ads:4333},  organicConfirmed:true,  actual:{total:1742,  organic:1506,  ads:236} },
-  'r-justbjorn':  { goal:{total:7948,   organic:5157,  ads:2790},  organicConfirmed:true,  actual:{total:2614,  organic:2307,  ads:307} },
-  'r-amala':      { goal:{total:1998,   organic:null,  ads:467},   organicConfirmed:null,  actual:{total:114,   organic:null,  ads:0} },
-  'r-cremeshop':  { goal:{total:19708,  organic:null,  ads:5000},  organicConfirmed:null,  actual:{total:6426,  organic:null,  ads:883} },
-  'r-evolis-aw':  { goal:{total:4267,   organic:3100,  ads:1167},  organicConfirmed:true,  actual:{total:2260,  organic:1694,  ads:566} },
-  'r-evolis-web': { goal:{total:1075,   organic:1075,  ads:null},  organicConfirmed:true,  actual:{total:1866,  organic:805,   ads:1061} },
-  'r-miguard':    { goal:{total:3047,   organic:2157,  ads:890},   organicConfirmed:true,  actual:{total:1159,  organic:1039,  ads:120} },
-  'r-pbj':        { goal:{total:2031,   organic:475,   ads:1556},  organicConfirmed:true,  actual:{total:285,   organic:62,    ads:223} },
-  'r-skinside':   { goal:{total:300,    organic:300,   ads:null},  organicConfirmed:true,  actual:{total:192,   organic:36,    ads:156} },
+  'r-skinuva':    { goalGid:196666138,  goalCols:{total:13, organic:18, ads:26}, goal:{total:186800, organic:76000, ads:46700}, organicConfirmed:true,  actual:{total:52236, organic:38617, ads:13619} },
+  'r-eraclea':    { goalGid:942935799,  goalCols:{total:14, organic:18, ads:23}, goal:{total:2600,   organic:700,   ads:1667},  organicConfirmed:false, actual:{total:742,   organic:434,   ads:308} },
+  'r-cosmette':   { goalGid:1084102342, goalCols:{total:14, organic:18, ads:23}, goal:{total:4200,   organic:600,   ads:300},   organicConfirmed:false, actual:{total:563,   organic:377,   ads:186} },
+  'r-cloudcafe':  { goalGid:1949875192, goalCols:{total:13, organic:18, ads:24}, goal:{total:11023,  organic:6690,  ads:4333},  organicConfirmed:true,  actual:{total:1742,  organic:1506,  ads:236} },
+  'r-justbjorn':  { goalGid:333511738,  goalCols:{total:14, organic:18, ads:25}, goal:{total:7948,   organic:5157,  ads:2790},  organicConfirmed:true,  actual:{total:2614,  organic:2307,  ads:307} },
+  'r-amala':      { goalGid:2031782096, goalCols:{total:14, organic:null, ads:23}, goal:{total:1998,   organic:null,  ads:467},   organicConfirmed:null,  actual:{total:114,   organic:null,  ads:0} },
+  'r-cremeshop':  { goalGid:521249346,  goalCols:{total:13, organic:null, ads:22}, goal:{total:19708,  organic:null,  ads:5000},  organicConfirmed:null,  actual:{total:6426,  organic:null,  ads:883} },
+  'r-evolis-aw':  { goalGid:154860784,  goalCols:{total:14, organic:19, ads:29}, goal:{total:4267,   organic:3100,  ads:1167},  organicConfirmed:true,  actual:{total:2260,  organic:1694,  ads:566} },
+  'r-evolis-web': { goalGid:1655791223, goalCols:{total:14, organic:19, ads:29}, goal:{total:1075,   organic:1075,  ads:null},  organicConfirmed:true,  actual:{total:1866,  organic:805,   ads:1061} },
+  'r-miguard':    { goalGid:332019976,  goalCols:{total:13, organic:16, ads:23}, goal:{total:3047,   organic:2157,  ads:890},   organicConfirmed:true,  actual:{total:1159,  organic:1039,  ads:120} },
+  'r-pbj':        { goalGid:1675074463, goalCols:{total:14, organic:18, ads:25}, goal:{total:2031,   organic:475,   ads:1556},  organicConfirmed:true,  actual:{total:285,   organic:62,    ads:223} },
+  'r-skinside':   { goalGid:1677661344, goalCols:{total:15, organic:18, ads:27}, goal:{total:300,    organic:300,   ads:null},  organicConfirmed:true,  actual:{total:192,   organic:36,    ads:156} },
 };
+
+/* Naive comma-split CSV parser — fine for these columns (plain
+   numbers/dates, nothing quoted), not a general-purpose CSV parser. */
+function parseCsvRows(csv){ return csv.split('\n').map(l => l.split(',')); }
+function parseGoalAmt(v){
+  if (v == null) return null;
+  const n = parseFloat(String(v).replace(/[$,]/g, '').trim());
+  return isNaN(n) ? null : n;
+}
+function currentMonthStr(){
+  const now = new Date();
+  return now.toLocaleString('en-US', { month: 'short' }) + '-' + String(now.getFullYear()).slice(2);
+}
+async function fetchLiveGoal(cfg){
+  if (!cfg.goalGid) return null;
+  try {
+    const res = await fetch(`https://docs.google.com/spreadsheets/d/${GOAL_FILE_ID}/export?format=csv&gid=${cfg.goalGid}`);
+    if (!res.ok) return null;
+    const rows = parseCsvRows(await res.text());
+    const monthStr = currentMonthStr();
+    const row = rows.find(r => (r[0] || '').trim() === monthStr);
+    if (!row) return null;
+    return {
+      total:   cfg.goalCols.total   != null ? parseGoalAmt(row[cfg.goalCols.total])   : null,
+      organic: cfg.goalCols.organic != null ? parseGoalAmt(row[cfg.goalCols.organic]) : null,
+      ads:     cfg.goalCols.ads     != null ? parseGoalAmt(row[cfg.goalCols.ads])     : null,
+    };
+  } catch (e) {
+    return null; // network/CORS failure — caller falls back to snapshot
+  }
+}
 
 function fmt(n){ return (n===null||n===undefined) ? '—' : '$' + Math.round(n).toLocaleString(); }
 function projected(actual){ return actual===null ? null : actual/TODAY_DAY*DAYS_IN_MONTH; }
@@ -383,14 +422,18 @@ function metricBlock(label, goal, actual, flagged){
   </div>`;
 }
 
-for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
-  const el = document.getElementById(elId);
-  if (!el) continue;
-  el.innerHTML =
-    metricBlock('Total Sales', cfg.goal.total, cfg.actual.total, false) +
-    metricBlock('Organic Sales', cfg.goal.organic, cfg.actual.organic, cfg.organicConfirmed === false) +
-    metricBlock('Ad Sales', cfg.goal.ads, cfg.actual.ads, false);
-}
+(async function render(){
+  for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
+    const el = document.getElementById(elId);
+    if (!el) continue;
+    const liveGoal = await fetchLiveGoal(cfg);
+    const goal = liveGoal || cfg.goal; // falls back to the Sep-26 snapshot if the fetch fails
+    el.innerHTML =
+      metricBlock('Total Sales', goal.total, cfg.actual.total, false) +
+      metricBlock('Organic Sales', goal.organic, cfg.actual.organic, cfg.organicConfirmed === false) +
+      metricBlock('Ad Sales', goal.ads, cfg.actual.ads, false);
+  }
+})();
 </script>
 
 </body>
