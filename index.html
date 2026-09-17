@@ -81,6 +81,7 @@
   .pct.gray{ color:#9aa1b1; font-size:10px; font-weight:600; }
   .proj.green{ color:#1a9c73; }
   .proj.red{ color:var(--danger); }
+  .ring-item .adj-note{ font-size:7.5px; color:#9aa1b1; margin-top:1px; line-height:1.2; }
 </style>
 </head>
 <body>
@@ -298,7 +299,7 @@ RING SEMANTICS
 </div>
 
 <div class="footnote">
-  <p>Ring fill = actual ÷ goal. Ring color = projected ÷ goal (green ≥ 100%, red &lt; 100%) — binary, same rule for every metric including Ad Sales. Gray means either "No goal set" (goal column empty) or "Not available yet" (goal exists, actuals don't). <span class="flag-key">⚠</span> next to a goal figure = the Organic goal column itself is unconfirmed on that brand's sheet (stale header) — unrelated to the actuals gaps.</p>
+  <p>Ring fill = actual ÷ goal. Ring color = projected ÷ goal (green ≥ 100%, red &lt; 100%) — binary, same rule for every metric including Ad Sales. Gray means either "No goal set" (goal column empty) or "Not available yet" (goal exists, actuals don't). Total Sales and Organic Sales projections are discounted by each brand's own pooled historical cancellation rate ("adj. for X% avg. cancel rate") — Ad Sales and évolis's Website group are intentionally left on the plain run-rate (see source comments for why). <span class="flag-key">⚠</span> next to a goal figure = the Organic goal column itself is unconfirmed on that brand's sheet (stale header) — unrelated to the actuals gaps.</p>
 </div>
 
 <script>
@@ -327,22 +328,20 @@ const DAYS_IN_MONTH = 30;
    cross-origin, not just server-side curl. */
 
 const BRAND_GOAL_CONFIG = {
-  'r-skinuva':    { goalGid:196666138,  goalCols:{total:13, organic:18, ads:26}, goal:{total:186800, organic:76000, ads:46700}, organicConfirmed:true,  actual:{total:52236, organic:38617, ads:13619} },
-  'r-eraclea':    { goalGid:942935799,  goalCols:{total:14, organic:18, ads:23}, goal:{total:2600,   organic:700,   ads:1667},  organicConfirmed:false, actual:{total:742,   organic:434,   ads:308} },
-  'r-cosmette':   { goalGid:1084102342, goalCols:{total:14, organic:18, ads:23}, goal:{total:2200,   organic:1900,  ads:300},   organicConfirmed:false, actual:{total:563,   organic:377,   ads:186} },
-  'r-cloudcafe':  { goalGid:1949875192, goalCols:{total:13, organic:18, ads:24}, goal:{total:11023,  organic:6690,  ads:4333},  organicConfirmed:true,  actual:{total:1742,  organic:1506,  ads:236} },
-  'r-justbjorn':  { goalGid:333511738,  goalCols:{total:14, organic:18, ads:25}, goal:{total:7948,   organic:5157,  ads:2790},  organicConfirmed:true,  actual:{total:2614,  organic:2307,  ads:307} },
-  'r-amala':      { goalGid:2031782096, goalCols:{total:14, organic:null, ads:23}, goal:{total:1998,   organic:null,  ads:467},   organicConfirmed:null,  actual:{total:114,   organic:null,  ads:0} },
-  'r-cremeshop':  { goalGid:521249346,  goalCols:{total:13, organic:null, ads:22}, goal:{total:19708,  organic:null,  ads:5000},  organicConfirmed:null,  actual:{total:6426,  organic:null,  ads:883} },
-  'r-evolis-aw':  { goalGid:154860784,  goalCols:{total:14, organic:19, ads:29}, goal:{total:4267,   organic:3100,  ads:1167},  organicConfirmed:true,  actual:{total:2260,  organic:1694,  ads:566} },
-  'r-evolis-web': { goalGid:1655791223, goalCols:{total:14, organic:19, ads:29}, goal:{total:1075,   organic:1075,  ads:null},  organicConfirmed:true,  actual:{total:1866,  organic:805,   ads:1061} },
-  'r-miguard':    { goalGid:332019976,  goalCols:{total:13, organic:16, ads:23}, goal:{total:3047,   organic:2157,  ads:890},   organicConfirmed:true,  actual:{total:1159,  organic:1039,  ads:120} },
-  'r-pbj':        { goalGid:1675074463, goalCols:{total:14, organic:18, ads:25}, goal:{total:2031,   organic:475,   ads:1556},  organicConfirmed:true,  actual:{total:285,   organic:62,    ads:223} },
-  'r-skinside':   { goalGid:1677661344, goalCols:{total:15, organic:18, ads:27}, goal:{total:300,    organic:300,   ads:null},  organicConfirmed:true,  actual:{total:192,   organic:36,    ads:156} },
+  'r-skinuva':    { goalGid:196666138,  goalCols:{total:13, organic:18, ads:26}, goal:{total:186800, organic:76000, ads:46700}, organicConfirmed:true,  actual:{total:52236, organic:38617, ads:13619}, ordersGid:39113380,   cancelRate:0.069 },
+  'r-eraclea':    { goalGid:942935799,  goalCols:{total:14, organic:18, ads:23}, goal:{total:2600,   organic:700,   ads:1667},  organicConfirmed:false, actual:{total:742,   organic:434,   ads:308}, ordersGid:1048076976, cancelRate:0.075 },
+  'r-cosmette':   { goalGid:1084102342, goalCols:{total:14, organic:18, ads:23}, goal:{total:2200,   organic:1900,  ads:300},   organicConfirmed:false, actual:{total:563,   organic:377,   ads:186}, ordersGid:982399951,  cancelRate:0.149 },
+  'r-cloudcafe':  { goalGid:1949875192, goalCols:{total:13, organic:18, ads:24}, goal:{total:11023,  organic:6690,  ads:4333},  organicConfirmed:true,  actual:{total:1742,  organic:1506,  ads:236}, ordersGid:782298390,  cancelRate:0.086 },
+  'r-justbjorn':  { goalGid:333511738,  goalCols:{total:14, organic:18, ads:25}, goal:{total:7948,   organic:5157,  ads:2790},  organicConfirmed:true,  actual:{total:2614,  organic:2307,  ads:307}, ordersGid:1781575614, cancelRate:0.105 },
+  'r-amala':      { goalGid:2031782096, goalCols:{total:14, organic:null, ads:23}, goal:{total:1998,   organic:null,  ads:467},   organicConfirmed:null,  actual:{total:114,   organic:null,  ads:0}, ordersGid:1410727505, cancelRate:0.056 },
+  'r-cremeshop':  { goalGid:521249346,  goalCols:{total:13, organic:null, ads:22}, goal:{total:19708,  organic:null,  ads:5000},  organicConfirmed:null,  actual:{total:6426,  organic:null,  ads:883}, ordersGid:1259265896, cancelRate:0.077 },
+  'r-evolis-aw':  { goalGid:154860784,  goalCols:{total:14, organic:19, ads:29}, goal:{total:4267,   organic:3100,  ads:1167},  organicConfirmed:true,  actual:{total:2260,  organic:1694,  ads:566}, ordersGid:1163928587, cancelRate:0.083 },
+  'r-evolis-web': { goalGid:1655791223, goalCols:{total:14, organic:19, ads:29}, goal:{total:1075,   organic:1075,  ads:null},  organicConfirmed:true,  actual:{total:1866,  organic:805,   ads:1061} }, // Shopify data — no order-level cancel field in this shape, cancel-rate adjustment out of scope
+  'r-miguard':    { goalGid:332019976,  goalCols:{total:13, organic:16, ads:23}, goal:{total:3047,   organic:2157,  ads:890},   organicConfirmed:true,  actual:{total:1159,  organic:1039,  ads:120}, ordersGid:1608462008, cancelRate:0.144 },
+  'r-pbj':        { goalGid:1675074463, goalCols:{total:14, organic:18, ads:25}, goal:{total:2031,   organic:475,   ads:1556},  organicConfirmed:true,  actual:{total:285,   organic:62,    ads:223}, ordersGid:1152606039, cancelRate:0.046 },
+  'r-skinside':   { goalGid:1677661344, goalCols:{total:15, organic:18, ads:27}, goal:{total:300,    organic:300,   ads:null},  organicConfirmed:true,  actual:{total:192,   organic:36,    ads:156}, ordersGid:545265606,  cancelRate:0.042 },
 };
 
-/* Naive comma-split CSV parser — fine for these columns (plain
-   numbers/dates, nothing quoted), not a general-purpose CSV parser. */
 function parseCsvRows(csv){
   // Proper quote-aware CSV parser — cells like " $ 186,800.00 " contain
   // a comma inside quotes; naive split(',') breaks on that and shifts
@@ -396,8 +395,94 @@ async function fetchLiveGoal(cfg){
   }
 }
 
+/* Cancellation-rate methodology (per spec):
+   - Group order lines by order_id — an order counts cancelled if ANY
+     of its line items has status === 'Cancelled'.
+   - Exclude orders with 'vine' anywhere in promotion_ids (case-
+     insensitive) — Vine units aren't representative of real customer
+     cancellation behavior.
+   - Exclude the current in-progress month (it hasn't had time to
+     cancel yet).
+   - Exclude the earliest month present in the data too — this sheet
+     is a rolling "last 120 days" cache, so its first visible month is
+     always a partial month for the same reason the current month is:
+     not enough time has passed. This wasn't explicit in the original
+     spec; it's my own extension of the same logic, flagged here in
+     case it should be reconsidered.
+   - Pool every remaining month together into one rate: cancelled ÷
+     total. Not per-month, not a rolling window.
+   - Returns null (not 0) when there's no qualifying history at all. */
+async function fetchCancelRate(cfg){
+  if (!cfg.ordersGid) return undefined;
+  try {
+    const res = await fetch(`https://docs.google.com/spreadsheets/d/${ORDERS_FILE_ID}/export?format=csv&gid=${cfg.ordersGid}`);
+    if (!res.ok) return undefined;
+    const rows = parseCsvRows(await res.text());
+    const header = rows[0].map(h => h.trim());
+    const idx = {};
+    header.forEach((h, i) => idx[h] = i);
+    if (idx['order_id'] === undefined || idx['date'] === undefined || idx['status'] === undefined) return undefined;
+
+    const now = new Date();
+    const currentKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+    const orders = {};
+
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      if (!r || r.length < 2) continue;
+      const oid = (r[idx['order_id']] || '').trim();
+      if (!oid) continue;
+      const dateStr = (r[idx['date']] || '').trim();
+      let year, month;
+      let m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) { year = parseInt(m[1]); month = parseInt(m[2]); }
+      else {
+        m = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (m) { year = parseInt(m[3]); month = parseInt(m[1]); }
+        else continue;
+      }
+      const isCancelled = (r[idx['status']] || '').trim() === 'Cancelled';
+      const isVine = idx['promotion_ids'] !== undefined && (r[idx['promotion_ids']] || '').toLowerCase().includes('vine');
+      if (!orders[oid]) orders[oid] = { cancelled: false, vine: false, year, month };
+      if (isCancelled) orders[oid].cancelled = true;
+      if (isVine) orders[oid].vine = true;
+    }
+
+    const monthKeys = Object.values(orders).map(o => `${o.year}-${o.month}`);
+    const distinctMonths = [...new Set(monthKeys)].sort();
+    if (distinctMonths.length === 0) return null;
+    const windowStartKey = distinctMonths[0];
+
+    let total = 0, cancelled = 0;
+    for (const o of Object.values(orders)) {
+      if (o.vine) continue;
+      const key = `${o.year}-${o.month}`;
+      if (key === currentKey || key === windowStartKey) continue;
+      total++;
+      if (o.cancelled) cancelled++;
+    }
+    return total > 0 ? cancelled / total : null;
+  } catch (e) {
+    return undefined; // network/CORS failure — distinct from a confirmed-empty result
+  }
+}
+
 function fmt(n){ return (n===null||n===undefined) ? '—' : '$' + Math.round(n).toLocaleString(); }
-function projected(actual){ return actual===null ? null : actual/TODAY_DAY*DAYS_IN_MONTH; }
+
+/* rawProjected is the plain run-rate. When applyCancelAdj is true and a
+   cancelRate is known, the actual PROJECTION (not the ring fill, not the
+   actual $ shown) is discounted by the brand's own pooled historical
+   cancellation rate — see the methodology note near ORDERS_FILE_ID above.
+   cancelRate === null means "known to have no history" (show the
+   fallback caption); cancelRate === undefined means "not fetched/not
+   applicable to this metric" (no caption at all, e.g. Ad Sales, or
+   évolis Website which isn't in scope for this feature). */
+function projected(actual, cancelRate, applyCancelAdj){
+  if (actual === null) return null;
+  const raw = actual / TODAY_DAY * DAYS_IN_MONTH;
+  if (!applyCancelAdj || cancelRate === undefined || cancelRate === null) return raw;
+  return raw * (1 - cancelRate);
+}
 
 function ring(fillPct, colorClass, size=80, stroke=7){
   const r=(size-stroke)/2, c=size/2, circ=2*Math.PI*r;
@@ -415,7 +500,7 @@ function ring(fillPct, colorClass, size=80, stroke=7){
   </svg>`;
 }
 
-function metricBlock(label, goal, actual, flagged){
+function metricBlock(label, goal, actual, flagged, cancelRate, applyCancelAdj){
   const flagHtml = flagged ? '<span class="flag" title="Organic column unconfirmed">⚠</span>' : '';
   if (goal === null || goal === undefined) {
     return `<div class="ring-item">
@@ -434,48 +519,85 @@ function metricBlock(label, goal, actual, flagged){
     </div>`;
   }
   const fillPct = actual / goal;
-  const proj = projected(actual);
+  const proj = projected(actual, cancelRate, applyCancelAdj);
   const colorClass = proj >= goal ? 'green' : 'red';
+  let adjNote = '';
+  if (applyCancelAdj) {
+    adjNote = cancelRate != null
+      ? `<div class="adj-note">adj. for ${Math.round(cancelRate*100)}% avg. cancel rate</div>`
+      : `<div class="adj-note">no cancel-rate history yet</div>`;
+  }
   return `<div class="ring-item">
     <div class="m-label">${label}${flagHtml}</div>
     ${ring(fillPct, colorClass)}
     <div class="pct ${colorClass}">${Math.round(fillPct*100)}%</div>
     <div class="proj ${colorClass}">Projecting ${fmt(proj)}</div>
     <div class="goal">Goal <b>${fmt(goal)}</b></div>
+    ${adjNote}
   </div>`;
 }
 
-function renderCard(elId, cfg, goal){
+/* Total and Organic both derive from the Amazon Orders sheet, so both
+   get the cancel-rate adjustment applied to their projection. Ad Sales
+   comes from the separate, pre-aggregated Ad Orders Cache — no order-
+   level cancellation data exists there, so it's intentionally left on
+   the plain run-rate (applyCancelAdj:false), same for évolis's Website
+   group (Shopify data, no matching 'status'/'cancelled' shape). This
+   was a conscious per-brand-type decision, not a default. */
+function renderCard(elId, cfg, goal, cancelRate){
   const el = document.getElementById(elId);
   if (!el) return;
+  const adjApplies = cfg.ordersGid != null; // only brands wired to an Amazon Orders sheet
   el.innerHTML =
-    metricBlock('Total Sales', goal.total, cfg.actual.total, false) +
-    metricBlock('Organic Sales', goal.organic, cfg.actual.organic, cfg.organicConfirmed === false) +
-    metricBlock('Ad Sales', goal.ads, cfg.actual.ads, false);
+    metricBlock('Total Sales', goal.total, cfg.actual.total, false, cancelRate, adjApplies) +
+    metricBlock('Organic Sales', goal.organic, cfg.actual.organic, cfg.organicConfirmed === false, cancelRate, adjApplies) +
+    metricBlock('Ad Sales', goal.ads, cfg.actual.ads, false, undefined, false);
+}
+
+// Per-brand live state — updated independently by the goal-fetch and
+// cancel-rate-fetch effects below, so neither can clobber the other.
+const liveState = {};
+for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
+  liveState[elId] = { goal: cfg.goal, cancelRate: cfg.cancelRate };
 }
 
 // PHASE 1 — synchronous, no network dependency, always runs immediately.
 // The page must be fully correct on load using only the Sep-26 snapshot,
 // regardless of whether live fetching works in this environment at all.
 for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
-  renderCard(elId, cfg, cfg.goal);
+  renderCard(elId, cfg, liveState[elId].goal, liveState[elId].cancelRate);
 }
 
-// PHASE 2 — best-effort live enhancement, fully decoupled per brand so
-// one slow/blocked fetch can never hold up (or blank) anything else.
-// Each fetch is capped at 4s; if it doesn't resolve in time, that one
-// card just quietly keeps its snapshot values.
+// PHASE 2 — best-effort live enhancement, fully decoupled per brand (and
+// per data source) so one slow/blocked fetch can never hold up or blank
+// anything else. Each fetch is capped at 4s; on timeout or failure that
+// piece just keeps its snapshot value.
 function withTimeout(promise, ms){
+  // resolves to undefined on timeout — distinct from a fetch that
+  // legitimately completed and returned null (e.g. "no cancel-rate
+  // history yet"). Callers must check `!== undefined`, not `!= null`.
   return Promise.race([
     promise,
-    new Promise(resolve => setTimeout(() => resolve(null), ms))
+    new Promise(resolve => setTimeout(() => resolve(undefined), ms))
   ]);
 }
 for (const [elId, cfg] of Object.entries(BRAND_GOAL_CONFIG)) {
-  if (!cfg.goalGid) continue;
-  withTimeout(fetchLiveGoal(cfg), 4000).then(liveGoal => {
-    if (liveGoal) renderCard(elId, cfg, liveGoal);
-  });
+  if (cfg.goalGid) {
+    withTimeout(fetchLiveGoal(cfg), 4000).then(liveGoal => {
+      if (liveGoal) {
+        liveState[elId].goal = liveGoal;
+        renderCard(elId, cfg, liveState[elId].goal, liveState[elId].cancelRate);
+      }
+    });
+  }
+  if (cfg.ordersGid) {
+    withTimeout(fetchCancelRate(cfg), 4000).then(rate => {
+      if (rate !== undefined) { // undefined = fetch didn't complete, keep snapshot.
+        liveState[elId].cancelRate = rate; // rate may legitimately be null = confirmed no history
+        renderCard(elId, cfg, liveState[elId].goal, liveState[elId].cancelRate);
+      }
+    });
+  }
 }
 </script>
 
