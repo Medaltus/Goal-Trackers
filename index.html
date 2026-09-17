@@ -110,7 +110,13 @@ GOALS — "NEW * Brand Performance Tracker - All Brands - Budget.xlsx"
     Skinuva: N(13)/S(18)/AA(26)   Cloud Cafe: N(13)/S(18)/Y(24)
     Just Björn: O(14)/S(18)/Z(25) PB & Jay: O(14)/S(18)/Z(25)
     eraclea/Cosmette: O(14)/S(18)*/X(23)  (*organic column unconfirmed)
-    Amala/High On Love/Crème Shop: no organic column exists at all.
+    Amala/High On Love: no organic column exists at all.
+    Crème Shop (its own tab, gid 521249346): N(13)/S(18)/Z(25) —
+      confirmed 2026-09-15; the header row is blank/unlabeled for S
+      (same stale-header pattern as other brands' sheets) and my
+      earlier reading of the Ads column was wrong — W(22) is "Ads
+      ACOS Goal" (a %), not the dollar figure; Z(25) is the real
+      "Ads Sales Goal".
 
 ACTUALS — three separate sources, matching how MiGuard's own page
   actually computes this (not my earlier guess):
@@ -334,7 +340,7 @@ const BRAND_GOAL_CONFIG = {
   'r-cloudcafe':  { goalGid:1949875192, goalCols:{total:13, organic:18, ads:24}, goal:{total:11023,  organic:6690,  ads:4333},  organicConfirmed:true,  actual:{total:1742,  organic:1506,  ads:236}, ordersGid:782298390,  cancelRate:0.086 },
   'r-justbjorn':  { goalGid:333511738,  goalCols:{total:14, organic:18, ads:25}, goal:{total:7948,   organic:5157,  ads:2790},  organicConfirmed:true,  actual:{total:2614,  organic:2307,  ads:307}, ordersGid:1781575614, cancelRate:0.105 },
   'r-amala':      { goalGid:2031782096, goalCols:{total:14, organic:null, ads:23}, goal:{total:1998,   organic:null,  ads:467},   organicConfirmed:null,  actual:{total:114,   organic:null,  ads:0}, ordersGid:1410727505, cancelRate:0.056 },
-  'r-cremeshop':  { goalGid:521249346,  goalCols:{total:13, organic:null, ads:22}, goal:{total:19708,  organic:null,  ads:5000},  organicConfirmed:null,  actual:{total:6426,  organic:null,  ads:883}, ordersGid:1259265896, cancelRate:0.077 },
+  'r-cremeshop':  { goalGid:521249346,  goalCols:{total:13, organic:18,   ads:25}, goal:{total:19708,  organic:14708, ads:5000},  organicConfirmed:true,  actual:{total:6426,  organic:5543,  ads:883}, ordersGid:1259265896, cancelRate:0.077 },
   'r-evolis-aw':  { goalGid:154860784,  goalCols:{total:14, organic:19, ads:29}, goal:{total:4267,   organic:3100,  ads:1167},  organicConfirmed:true,  actual:{total:2260,  organic:1694,  ads:566}, ordersGid:1163928587, cancelRate:0.083 },
   'r-evolis-web': { goalGid:1655791223, goalCols:{total:14, organic:19, ads:29}, goal:{total:1075,   organic:1075,  ads:null},  organicConfirmed:true,  actual:{total:1866,  organic:805,   ads:1061} }, // Shopify data — no order-level cancel field in this shape, cancel-rate adjustment out of scope
   'r-miguard':    { goalGid:332019976,  goalCols:{total:13, organic:16, ads:23}, goal:{total:3047,   organic:2157,  ads:890},   organicConfirmed:true,  actual:{total:1159,  organic:1039,  ads:120}, ordersGid:1608462008, cancelRate:0.144 },
